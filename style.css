@@ -1,0 +1,269 @@
+* {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+  box-sizing: border-box;
+}
+
+body {
+  max-width: 100vw;
+  background-color: #f5f5f57a;
+}
+
+/* .container{
+  padding: 2% 4%;
+} */
+
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 30px;
+  margin-top: 75px;
+}
+
+.hero-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 360px;
+  margin-top: 160px;
+  margin-bottom: 2rem;
+}
+
+#hero-img {
+  width: 100%;
+  max-width: 360px;
+}
+
+.btn {
+  width: 160px;
+  height: 45px;
+  background-color: #35bd3a;
+  border-radius: 0.5rem;
+  box-shadow: 3px 3px 0px 1px #01ab08;
+  margin-bottom: 100px;
+  font-size: 1.2rem;
+  font-weight: 600;
+
+  color: white;
+
+  padding: 8px 0px;
+  padding-left: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+#highest-score {
+  font-size: 24px;
+  font-weight: 600;
+
+  text-align: center;
+}
+
+footer {
+  max-width: 364px;
+  margin-top: 75px;
+  text-align: center;
+  padding: 20px;
+}
+
+footer p {
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.hide {
+  display: none;
+}
+
+.quiz-started .question-section {
+  display: block;
+}
+
+.quiz-bgColor1 {
+  background-color: #cce2c2;
+}
+
+.quiz-bgColor2 {
+  background-color: #e4e5c7;
+}
+
+.quiz-bgColor3 {
+  background-color: #dbadad;
+}
+
+.question-section {
+  width: 80vw;
+  margin: 0 auto;
+}
+
+.ques-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+
+  margin-top: 130px;
+}
+
+.logo img {
+  width: 150px;
+  position: absolute;
+  left: 0;
+  top: -100px;
+  cursor: pointer;
+}
+
+.question-box {
+  width: 100%;
+  max-width: 1400px;
+}
+
+#question, .option-box, li {
+  padding: 16px 30px;
+  background-color: #fff;
+  width: 100%;
+  max-width: 1400px;
+
+  font-weight: 600;
+  border-radius: .5rem;
+}
+
+.option-box{
+  margin-top: 1rem;
+}
+
+li{
+   
+  list-style-type: none;
+  border: .5px solid #D9D9D9;
+  cursor: pointer;
+}
+li+li{
+  margin-top: 1rem;
+}
+
+.ques-no {
+  width: 70px;
+  height: 30px;
+  background-color: #fec33d;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 30px;
+  border-radius: .2rem;
+  align-self: end;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.timer{
+  width: 70px;
+  height: 30px;
+  background-color: #02A4096E;
+  color: white;
+  text-align: center;
+  align-self: flex-end;
+  margin-top: 1rem;
+  border-radius: .2rem;
+   
+  line-height: 30px;
+}
+
+
+#next-btn{
+  border: none;
+  background-color: transparent;
+  font-size: 1.2rem; 
+  font-weight: 700;
+  color: #01ab08;
+  margin-top: 1rem;
+  margin-left: auto;
+  cursor: pointer;
+ 
+}
+
+#next-btn:hover {
+  text-decoration-line: underline;
+}
+
+/* Result Section**************************************** */
+
+
+.result-section {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.result-logo {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+
+  
+}
+
+.result-logo img {
+  width: 130px;
+  /* margin-bottom: 20px; */
+}
+
+.result-logo h2 {
+  font-size: 1rem;
+  font-weight:  600;
+}
+
+
+.score-bar{
+  height: 40px;
+  width: 50%;
+  display: flex;
+  /* justify-content: center; */
+  align-items: center;
+ margin-top: 50px;
+ background-color: #ff7a7a;
+ border-top-left-radius: .5rem;
+  border-bottom-left-radius: .5rem;
+ border-top-right-radius: .5rem;
+  border-bottom-right-radius: .5rem;
+}
+
+.score-bar-correct{
+  height: 100%;
+   text-align: left;
+  background-color: #35bd3a;
+  border-top-left-radius: .5rem;
+  border-bottom-left-radius: .5rem;
+
+}
+ 
+
+.score{
+  font-size: 1rem;
+  font-weight: 500;
+  margin-top: 10px;
+  margin-bottom: 60px;
+}
+
+.result-msg{
+margin-bottom: 30px;
+font-weight: 600;
+font-size: .8rem;
+}
+
+ 
+.show-result .result-container{
+  display: block;
+}
+
+.disable-options{
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
