@@ -21,7 +21,7 @@ let prevScore;
 let score = 0;
 let intervalId;
 
-let totalTimeInSec = 5;
+let totalTimeInSec = 30;
 
 const questions = {
   ' 1. What does JS stand for?': 'JavaScript',
