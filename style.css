@@ -54,6 +54,13 @@ main {
   cursor: pointer;
 }
 
+#retryBtn {
+  width: 100px;
+  height: 40px;
+  line-height: 25px;
+  font-size: 14px;
+  font-weight: 600;
+}
 #highest-score {
   font-size: 24px;
   font-weight: 600;
@@ -263,7 +270,8 @@ font-size: .8rem;
 }
 
 .disable-options{
+  
   pointer-events: none;
-  cursor: not-allowed;
+  
 }
 

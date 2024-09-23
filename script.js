@@ -139,6 +139,7 @@ nextBtn.addEventListener('click', () => {
     scoreText.innerText = `${score} / ${questionLength}`;
     container.classList.remove('quiz-started');
     container.classList.add('show-result');
+    clearInterval(intervalId)
     showRemarks();
     showScoreBar();
   } else {
@@ -175,6 +176,8 @@ function goHome() {
   highestScoreEl.classList.remove('hide');
   highestScoreEl.innerText = `Previous Score: ${prevScore}/${questionLength}`;
   body.classList.remove('quiz-bgColor1');
+  body.classList.remove('quiz-bgColor2');
+  body.classList.remove('quiz-bgColor3');
   container.classList.remove('show-result');
   container.classList.remove('quiz-started');
   main.classList.remove('hide');
@@ -207,8 +210,7 @@ function setOptions() {
 options.forEach((option) => {
   option.addEventListener('click', (e) => {
     clearInterval(intervalId);
-
-    // debugger
+      option.parentElement.style.cursor= 'not-allowed';
     options.forEach((li) => {
       li.classList.add('disable-options');
     });
@@ -233,13 +235,18 @@ function showCorrectOpt() {
 }
 
 function resetOptions() {
+ [...options][0].parentElement.style.cursor = 'auto';
   options.forEach((li) => {
+    
     li.style.border = '0.5px solid #D9D9D9';
     li.classList.remove('disable-options');
   });
 }
 
 function showScoreBar() {
+  body.classList.remove('quiz-bgColor2');
+    body.classList.remove('quiz-bgColor3');
+    body.classList.add('quiz-bgColor1');
   if (score / questionLength === 1) {
     scoreBarCorrect.style.width = `${(score / questionLength) * 100}%`;
     scoreBarCorrect.style['border-top-right-radius'] = '0.5rem';
@@ -274,6 +281,10 @@ function startTimer() {
 
     if (timeLeft <= 0) {
       clearInterval(intervalId);
+      [...options][0].parentElement.style.cursor= 'not-allowed';
+      options.forEach((li) => {
+        li.classList.add('disable-options');
+      });
       showCorrectOpt();
     } else {
       if (totalTimeInSec / 2 >= timeLeft && timeLeft > totalTimeInSec / 4) {
