@@ -21,7 +21,7 @@ let prevScore;
 let score = 0;
 let intervalId;
 
-let totalTimeInSec = 30;
+let totalTimeInSec = 10;
 
 const questions = {
   ' 1. What does JS stand for?': 'JavaScript',
@@ -214,6 +214,7 @@ options.forEach((option) => {
     options.forEach((li) => {
       li.classList.add('disable-options');
     });
+    e.target.style.opacity= '100%';
     if (e.target.innerText.trim() === correctAns.trim()) {
       score++;
 
@@ -230,6 +231,7 @@ function showCorrectOpt() {
     // debugger
     if (option.innerText.trim() === correctAns.trim()) {
       option.style.border = '2px solid green';
+      option.style.opacity= '100%';
     }
   });
 }

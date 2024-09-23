@@ -272,6 +272,7 @@ font-size: .8rem;
 .disable-options{
   
   pointer-events: none;
+  opacity: 50%;
   
 }
 
