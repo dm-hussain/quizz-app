@@ -16,12 +16,113 @@ const resultMsg = document.querySelector('.result-msg');
 const timer = document.querySelector('.timer');
 const highestScoreEl = document.querySelector('#highest-score');
 
-let highestScore;
-let prevScore;
-let score = 0;
-let intervalId;
+let quizData = JSON.parse(localStorage.getItem('quizData')) || {};
 
-let totalTimeInSec = 10;
+let oldScore = localStorage.getItem('oldScore') || 0;
+localStorage.setItem('oldScore', oldScore);
+let highestScore;
+let currentScore = quizData.currentScore || '';
+let score = quizData.score || 0;
+let intervalId = localStorage.getItem('intervalId') || '';
+let selectedId = localStorage.getItem('selectedId') || '';
+const totalTimeInSec = 30;
+let correctAns;
+
+if (quizData.quesNo) {
+  quesNo.innerText = quizData.quesNo;
+}
+
+let bodyClass = localStorage.getItem('bodyClass');
+let containerClass = localStorage.getItem('containerClass');
+let mainClass = localStorage.getItem('mainClass');
+let savedQuestion = localStorage.getItem('questionFieldValue');
+let ulCursorStyle = localStorage.getItem('ulCursorStyle');
+let optionsDisabled = localStorage.getItem('optionsDisabled');
+let savedOpacity = localStorage.getItem('selectedOptOpacity');
+
+if (bodyClass) {
+  body.className = bodyClass;
+}
+
+if (containerClass) {
+  container.className = containerClass;
+}
+
+if (mainClass) {
+  main.className = mainClass;
+}
+if (savedQuestion) {
+  questionField.innerText = savedQuestion;
+}
+
+if (ulCursorStyle) {
+  [...options][0].parentElement.style.cursor = ulCursorStyle;
+}
+
+let savedOpt = JSON.parse(localStorage.getItem('savedOption'));
+
+if (savedOpt) {
+  [...options].forEach((li, i) => {
+    li.innerText = savedOpt[i];
+  });
+}
+
+if (savedOpt && mainClass) {
+  startTimer();
+}
+
+if (optionsDisabled === 'true') {
+  options.forEach((li) => {
+    li.classList.add('disable-options');
+  });
+  clearInterval(intervalId);
+}
+
+if (savedOpacity && selectedId && bodyClass) {
+  timer.innerText = 0;
+  body.classList.add('quiz-bgColor2');
+  body.classList.remove('quiz-bgColor1');
+  body.classList.remove('quiz-bgColor3');
+  nextBtn.classList.remove('hide');
+
+  [...options].forEach((el) => {
+    if (el.id === selectedId && correctAns) {
+      el.style.opacity = savedOpacity;
+      el.style.border = '2px solid green';
+      nextBtn.classList.remove('hide');
+      clearInterval(intervalId);
+    }
+  });
+}
+
+const savedCorrectAns = localStorage.getItem('correctAns');
+if (savedCorrectAns && bodyClass) {
+  timer.innerText = 0;
+  clearInterval(intervalId);
+  correctAns = savedCorrectAns;
+  [...options].forEach((el) => {
+    el.classList.add('disable-options');
+    if (el.innerText.trim() === correctAns.trim()) {
+      // debugger
+      el.style.border = '2px solid green';
+      el.style.opacity = '100%';
+      nextBtn.classList.remove('hide');
+      el.parentElement.style.cursor = 'not-allowed';
+      localStorage.setItem('ulCursorStyle', 'not-allowed');
+    }
+  });
+}
+
+let wrongSelectionId = localStorage.getItem('wrongSelectionId');
+
+if (wrongSelectionId) {
+  [...options].forEach((el) => {
+    if (el.id === wrongSelectionId) {
+      el.style.border = '2px solid red';
+      el.style.opacity = '100%';
+    }
+  });
+}
 
 const questions = {
   ' 1. What does JS stand for?': 'JavaScript',
@@ -117,49 +218,107 @@ const resultRemarks = [
   'Great job, keep it up!',
 ];
 
+let savedRemarks = localStorage.getItem('remarks');
+if (savedRemarks) {
+  resultMsg.innerText = savedRemarks;
+}
 let questionLength = Object.keys(questions).length;
 scoreBarCorrect.style.width = `${(score / questionLength) * 100}%`;
 scoreText.innerText = `${score} / ${questionLength}`;
-let btnClickCount = 0;
+let btnClickCount = quizData.btnCount || 0;
+
+if (btnClickCount === questionLength + 1) {
+  body.classList.add('quiz-bgColor1');
+  body.classList.remove('quiz-bgColor2');
+  body.classList.remove('quiz-bgColor3');
+  clearInterval(intervalId);
+}
+
+if (currentScore) {
+  highestScoreEl.classList.remove('hide');
+  highestScoreEl.innerText = `Previous Score: ${currentScore}/${questionLength}`;
+}
 
 startBtn.addEventListener('click', () => {
+  wrongSelectionId = '';
+  localStorage.setItem('wrongSelectionId', wrongSelectionId);
   btnClickCount++;
+  quizData.btnCount = btnClickCount;
+  localStorage.setItem('quizData', JSON.stringify(quizData));
+
   body.classList.add('quiz-bgColor1');
   container.classList.add('quiz-started');
   main.classList.add('hide');
+
+  localStorage.setItem('bodyClass', body.classList.value);
+  localStorage.setItem('containerClass', container.classList.value);
+  localStorage.setItem('mainClass', main.classList.value);
+
   quesNo.innerText = `${btnClickCount} / ${questionLength}`;
+  quizData.quesNo = quesNo.innerText;
+  localStorage.setItem('quizData', JSON.stringify(quizData));
   setQuestion();
 });
 
 nextBtn.addEventListener('click', () => {
+  wrongSelectionId = '';
+  localStorage.setItem('wrongSelectionId', wrongSelectionId);
+  nextBtn.classList.add('hide');
   btnClickCount++;
+  quizData.btnCount = btnClickCount;
+  localStorage.setItem('quizData', JSON.stringify(quizData));
   resetOptions();
 
   if (btnClickCount > questionLength) {
     scoreText.innerText = `${score} / ${questionLength}`;
     container.classList.remove('quiz-started');
     container.classList.add('show-result');
-    clearInterval(intervalId)
+    localStorage.setItem('containerClass', container.classList.value);
+    body.classList.remove('quiz-bgColor2');
+    body.classList.remove('quiz-bgColor3');
+    body.classList.add('quiz-bgColor1');
+    localStorage.setItem('bodyClass', body.classList.value);
+
+    clearInterval(intervalId);
+    currentScore = score;
+    quizData.currentScore = score;
+    localStorage.setItem('quizData', JSON.stringify(quizData));
+
     showRemarks();
     showScoreBar();
   } else {
     quesNo.innerText = `${btnClickCount} / ${questionLength}`;
+    quizData.quesNo = quesNo.innerText;
+    localStorage.setItem('quizData', JSON.stringify(quizData));
     setQuestion();
   }
 });
 
 reTryBtn.addEventListener('click', () => {
-  prevScore = score;
+  wrongSelectionId = '';
+  localStorage.setItem('wrongSelectionId', wrongSelectionId);
+  nextBtn.classList.add('hide');
+  currentScore = score;
+  quizData.currentScore = score;
   btnClickCount = 1;
   score = 0;
+  quizData.score = score;
+  quizData.btnCount = btnClickCount;
+  localStorage.setItem('quizData', JSON.stringify(quizData));
   scoreBarCorrect.style.width = 0;
 
   resetOptions();
   quesNo.innerText = `${btnClickCount} / ${questionLength}`;
+  quizData.quesNo = quesNo.innerText;
+  localStorage.setItem('quizData', JSON.stringify(quizData));
   container.classList.remove('show-result');
   container.classList.add('quiz-started');
   body.classList.remove('quiz-bgColor3');
   body.classList.add('quiz-bgColor1');
+
+  localStorage.setItem('bodyClass', body.classList.value);
+  localStorage.setItem('containerClass', container.classList.value);
+
   setQuestion();
 });
 
@@ -171,84 +330,112 @@ resultLogo.addEventListener('click', () => {
 });
 
 function goHome() {
-  prevScore = score;
+  localStorage.setItem('optionsDisabled', 'false');
+  wrongSelectionId = '';
+  localStorage.setItem('wrongSelectionId', wrongSelectionId);
+  currentScore = score;
+  quizData.currentScore = score;
+  localStorage.setItem('quizData', JSON.stringify(quizData));
   clearInterval(intervalId);
   highestScoreEl.classList.remove('hide');
-  highestScoreEl.innerText = `Previous Score: ${prevScore}/${questionLength}`;
+  highestScoreEl.innerText = `Previous Score: ${currentScore}/${questionLength}`;
   body.classList.remove('quiz-bgColor1');
   body.classList.remove('quiz-bgColor2');
   body.classList.remove('quiz-bgColor3');
   container.classList.remove('show-result');
   container.classList.remove('quiz-started');
   main.classList.remove('hide');
+  localStorage.setItem('bodyClass', body.classList.value);
+  localStorage.setItem('containerClass', container.classList.value);
+  localStorage.setItem('mainClass', main.classList.value);
+
   btnClickCount = 0;
   score = 0;
+  quizData.btnCount = btnClickCount;
+  quizData.score = score;
+  localStorage.setItem('quizData', JSON.stringify(quizData));
   scoreBarCorrect.style.width = 0;
   quesNo.innerText = `${btnClickCount} / ${questionLength}`;
+  quizData.quesNo = quesNo.innerText;
+  localStorage.setItem('quizData', JSON.stringify(quizData));
   resetOptions();
+  resetAll();
 }
-let correctAns;
+
 function setQuestion() {
   //  debugger
   questionField.innerText = Object.keys(questions)[btnClickCount - 1];
   correctAns = Object.values(questions)[btnClickCount - 1];
 
+  localStorage.setItem('questionFieldValue', questionField.innerText);
+  localStorage.setItem('correctAns', correctAns);
   setOptions();
   startTimer();
 }
 
 function setOptions() {
+  const optArr = [];
   options.forEach((option, i) => {
     const allOptKeys = Object.keys(allOptions);
     const allValuesOfOpt = Object.values(
       allOptions[allOptKeys[btnClickCount - 1]]
     )[i];
     option.innerText = allValuesOfOpt;
+    optArr.push(allValuesOfOpt);
   });
+
+  localStorage.setItem('savedOption', JSON.stringify(optArr));
 }
 
 options.forEach((option) => {
   option.addEventListener('click', (e) => {
+    nextBtn.classList.remove('hide');
     clearInterval(intervalId);
-      option.parentElement.style.cursor= 'not-allowed';
+    option.parentElement.style.cursor = 'not-allowed';
+    localStorage.setItem('ulCursorStyle', 'not-allowed');
     options.forEach((li) => {
       li.classList.add('disable-options');
     });
-    e.target.style.opacity= '100%';
+    localStorage.setItem('optionsDisabled', 'true');
+    e.target.style.opacity = '100%';
+    selectedId = e.target.id;
+
+    localStorage.setItem('selectedId', selectedId);
+    localStorage.setItem('selectedOptOpacity', '100%');
     if (e.target.innerText.trim() === correctAns.trim()) {
       score++;
-
+      quizData.score = score;
+      localStorage.setItem('quizData', JSON.stringify(quizData));
       e.target.style.border = '2px solid green';
     } else {
       showCorrectOpt();
       e.target.style.border = '2px solid red';
+      localStorage.setItem('wrongSelectionId', e.target.id);
     }
   });
 });
 
 function showCorrectOpt() {
   options.forEach((option) => {
-    // debugger
     if (option.innerText.trim() === correctAns.trim()) {
       option.style.border = '2px solid green';
-      option.style.opacity= '100%';
+      option.style.opacity = '100%';
     }
   });
 }
 
 function resetOptions() {
- [...options][0].parentElement.style.cursor = 'auto';
+  [...options][0].parentElement.style.cursor = 'auto';
+  localStorage.setItem('ulCursorStyle', 'auto');
+
   options.forEach((li) => {
-    li.style.opacity= ''
+    li.style.opacity = '';
     li.style.border = '0.5px solid #D9D9D9';
     li.classList.remove('disable-options');
   });
 }
 
 function showScoreBar() {
-  body.classList.remove('quiz-bgColor2');
-    body.classList.remove('quiz-bgColor3');
-    body.classList.add('quiz-bgColor1');
   if (score / questionLength === 1) {
     scoreBarCorrect.style.width = `${(score / questionLength) * 100}%`;
     scoreBarCorrect.style['border-top-right-radius'] = '0.5rem';
@@ -261,10 +448,13 @@ function showScoreBar() {
 function showRemarks() {
   if (score / questionLength < 0.33) {
     resultMsg.innerText = resultRemarks[0];
+    localStorage.setItem('remarks', resultMsg.innerText);
   } else if (score / questionLength > 0.33 && score / questionLength < 0.66) {
     resultMsg.innerText = resultRemarks[1];
+    localStorage.setItem('remarks', resultMsg.innerText);
   } else if (score / questionLength > 0.66) {
     resultMsg.innerText = resultRemarks[2];
+    localStorage.setItem('remarks', resultMsg.innerText);
   }
 }
 
@@ -272,7 +462,7 @@ function startTimer() {
   clearInterval(intervalId);
   body.classList.remove('quiz-bgColor3');
   body.classList.remove('quiz-bgColor2');
-
+  nextBtn.classList.add('hide');
   body.classList.add('quiz-bgColor1');
 
   let timeLeft = totalTimeInSec;
@@ -282,11 +472,16 @@ function startTimer() {
     timer.innerText = timeLeft;
 
     if (timeLeft <= 0) {
+      nextBtn.classList.remove('hide');
       clearInterval(intervalId);
-      [...options][0].parentElement.style.cursor= 'not-allowed';
+      [...options][0].parentElement.style.cursor = 'not-allowed';
+      localStorage.setItem('ulCursorStyle', 'not-allowed');
+
       options.forEach((li) => {
         li.classList.add('disable-options');
       });
+      localStorage.setItem('optionsDisabled', 'true');
+
       showCorrectOpt();
     } else {
       if (totalTimeInSec / 2 >= timeLeft && timeLeft > totalTimeInSec / 4) {
@@ -298,4 +493,27 @@ function startTimer() {
       }
     }
   }, 1000);
+  localStorage.setItem('intervalId', intervalId);
+}
+
+function resetAll() {
+  bodyClass = '';
+  localStorage.setItem('bodyClass', bodyClass);
+  correctAns = '';
+  localStorage.setItem('correctAns', correctAns);
+  intervalId = '';
+  localStorage.setItem('intervalId', intervalId);
+  mainClass = '';
+  localStorage.setItem('mainClass', mainClass);
+  questionField.innerText = '';
+  localStorage.setItem('questionFieldValue', questionField.innerText);
+  quizData = {};
+  localStorage.setItem('quizData', JSON.stringify(quizData));
+  optArr = [];
+  localStorage.setItem('savedOption', JSON.stringify(optArr));
+  selectedId = '';
+  localStorage.setItem('selectedId', selectedId);
+  localStorage.setItem('selectedOptOpacity', '');
+  ulCursorStyle = '';
+  localStorage.setItem('ulCursorStyle', ulCursorStyle);
 }
