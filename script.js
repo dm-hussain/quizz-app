@@ -14,12 +14,43 @@ const scoreBarCorrect = document.querySelector('.score-bar-correct');
 const scoreBarWrong = document.querySelector('.score-bar-wrong');
 const resultMsg = document.querySelector('.result-msg');
 const timer = document.querySelector('.timer');
-const highestScoreEl = document.querySelector('#highest-score');
-
+const highestScoreEl = document.querySelector('.highest-score');
 let quizData = JSON.parse(localStorage.getItem('quizData')) || {};
 
-let oldScore = localStorage.getItem('oldScore') || 0;
-localStorage.setItem('oldScore', oldScore);
+// Music Section*********************
+
+// Intro Sound
+
+const introMusic = new Audio('./sounds/intro.mp3');
+introMusic.loop = true;
+introMusic.volume = 0.2;
+introMusic.play();
+
+// for countDown timer
+
+const countDownMusic = new Audio('./sounds/cDown.mp3');
+const unMuteIcon = document.querySelector('#unmute');
+const muteIcon = document.querySelector('#mute');
+
+unMuteIcon.addEventListener('click', () => {
+  unMuteIcon.classList.add('hide');
+  muteIcon.classList.remove('hide');
+  countDownMusic.volume = 0;
+});
+muteIcon.addEventListener('click', () => {
+  unMuteIcon.classList.remove('hide');
+  muteIcon.classList.add('hide');
+  countDownMusic.volume = 1;
+});
+
+// For correct Answer
+const correctAnswerMusic = new Audio('./sounds/correct.mp3');
+correctAnswerMusic.volume = 0.2;
+const wrongAnswerMusic = new Audio('./sounds/wrong.mp3');
+wrongAnswerMusic.volume = 0.3;
+
+// ******************************************
+
 let highestScore;
 let currentScore = quizData.currentScore || '';
 let score = quizData.score || 0;
@@ -27,6 +58,7 @@ let intervalId = localStorage.getItem('intervalId') || '';
 let selectedId = localStorage.getItem('selectedId') || '';
 const totalTimeInSec = 30;
 let correctAns;
+let oldScore = localStorage.getItem('oldScore') || currentScore || 0;
 
 if (quizData.quesNo) {
   quesNo.innerText = quizData.quesNo;
@@ -39,6 +71,13 @@ let savedQuestion = localStorage.getItem('questionFieldValue');
 let ulCursorStyle = localStorage.getItem('ulCursorStyle');
 let optionsDisabled = localStorage.getItem('optionsDisabled');
 let savedOpacity = localStorage.getItem('selectedOptOpacity');
+let highestScoreClass = localStorage.getItem('highestScoreClass');
+let highestScoreText = localStorage.getItem('highestScoreText');
+
+if (highestScoreText) {
+  highestScoreEl.classList = highestScoreClass;
+  highestScoreEl.firstElementChild.innerText = highestScoreText;
+}
 
 if (bodyClass) {
   body.className = bodyClass;
@@ -134,7 +173,7 @@ const questions = {
   '5. What will the following code output: `console.log(typeof null)`?':
     '"object"  ',
   '6. How can you add a comment in a JavaScript code? ': '// comment',
-  '7. Which operator is used to assign a value to a variable? ': ':=',
+  '7. Which operator is used to assign a value to a variable? ': '=',
   " 8. What will be the output of `console.log(2 + '2')`? ": '"22"',
   '9. Which method is used to convert a JSON string into a JavaScript object? ':
     ' JSON.parse()',
@@ -235,11 +274,19 @@ if (btnClickCount === questionLength + 1) {
 }
 
 if (currentScore) {
-  highestScoreEl.classList.remove('hide');
-  highestScoreEl.innerText = `Previous Score: ${currentScore}/${questionLength}`;
+  // highestScoreEl.classList.remove('hide');
+  // highestScoreEl.firstElementChild.innerText = `${currentScore}/${questionLength}`;
+  highestScoreEl.classList = highestScoreClass;
+  highestScoreEl.firstElementChild.innerText = highestScoreText;
+  // localStorage.setItem('highestScoreClass', highestScoreEl.classList.value);
+  // localStorage.setItem('highestScoreText',  highestScoreEl.firstElementChild.innerText);
 }
 
 startBtn.addEventListener('click', () => {
+  introMusic.pause();
+  introMusic.currentTime = 0;
+  countDownMusic.currentTime = 0;
+  countDownMusic.play();
   wrongSelectionId = '';
   localStorage.setItem('wrongSelectionId', wrongSelectionId);
   btnClickCount++;
@@ -261,6 +308,12 @@ startBtn.addEventListener('click', () => {
 });
 
 nextBtn.addEventListener('click', () => {
+  correctAnswerMusic.pause();
+  wrongAnswerMusic.pause();
+  correctAnswerMusic.currentTime = 0;
+  wrongAnswerMusic.currentTime = 0;
+  countDownMusic.currentTime = 0;
+  countDownMusic.play();
   wrongSelectionId = '';
   localStorage.setItem('wrongSelectionId', wrongSelectionId);
   nextBtn.classList.add('hide');
@@ -270,6 +323,14 @@ nextBtn.addEventListener('click', () => {
   resetOptions();
 
   if (btnClickCount > questionLength) {
+    introMusic.currentTime = 0;
+    introMusic.play();
+    correctAnswerMusic.pause();
+    wrongAnswerMusic.pause();
+    correctAnswerMusic.currentTime = 0;
+    wrongAnswerMusic.currentTime = 0;
+    countDownMusic.currentTime = 0;
+    countDownMusic.pause();
     scoreText.innerText = `${score} / ${questionLength}`;
     container.classList.remove('quiz-started');
     container.classList.add('show-result');
@@ -295,6 +356,10 @@ nextBtn.addEventListener('click', () => {
 });
 
 reTryBtn.addEventListener('click', () => {
+  introMusic.pause();
+  introMusic.currentTime = 0;
+  countDownMusic.currentTime = 0;
+  countDownMusic.play();
   wrongSelectionId = '';
   localStorage.setItem('wrongSelectionId', wrongSelectionId);
   nextBtn.classList.add('hide');
@@ -330,15 +395,23 @@ resultLogo.addEventListener('click', () => {
 });
 
 function goHome() {
+  introMusic.currentTime = 0;
+  introMusic.play();
+  countDownMusic.currentTime = 0;
+  countDownMusic.pause();
+  correctAnswerMusic.pause();
+  wrongAnswerMusic.pause();
+  correctAnswerMusic.currentTime = 0;
+  wrongAnswerMusic.currentTime = 0;
+
   localStorage.setItem('optionsDisabled', 'false');
   wrongSelectionId = '';
   localStorage.setItem('wrongSelectionId', wrongSelectionId);
   currentScore = score;
   quizData.currentScore = score;
   localStorage.setItem('quizData', JSON.stringify(quizData));
+
   clearInterval(intervalId);
-  highestScoreEl.classList.remove('hide');
-  highestScoreEl.innerText = `Previous Score: ${currentScore}/${questionLength}`;
   body.classList.remove('quiz-bgColor1');
   body.classList.remove('quiz-bgColor2');
   body.classList.remove('quiz-bgColor3');
@@ -360,6 +433,18 @@ function goHome() {
   localStorage.setItem('quizData', JSON.stringify(quizData));
   resetOptions();
   resetAll();
+
+  if (oldScore < currentScore) {
+    oldScore = currentScore;
+    localStorage.setItem('oldScore', oldScore);
+  }
+  highestScoreEl.classList.remove('hide');
+  highestScoreEl.firstElementChild.innerText = `${oldScore}/${questionLength}`;
+  localStorage.setItem('highestScoreClass', highestScoreEl.classList.value);
+  localStorage.setItem(
+    'highestScoreText',
+    highestScoreEl.firstElementChild.innerText
+  );
 }
 
 function setQuestion() {
@@ -389,6 +474,8 @@ function setOptions() {
 
 options.forEach((option) => {
   option.addEventListener('click', (e) => {
+    countDownMusic.currentTime = 0;
+    countDownMusic.pause();
     nextBtn.classList.remove('hide');
     clearInterval(intervalId);
     option.parentElement.style.cursor = 'not-allowed';
@@ -407,7 +494,9 @@ options.forEach((option) => {
       quizData.score = score;
       localStorage.setItem('quizData', JSON.stringify(quizData));
       e.target.style.border = '2px solid green';
+      correctAnswerMusic.play();
     } else {
+      wrongAnswerMusic.play();
       showCorrectOpt();
       e.target.style.border = '2px solid red';
       localStorage.setItem('wrongSelectionId', e.target.id);
