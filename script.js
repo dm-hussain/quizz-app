@@ -21,10 +21,28 @@ let quizData = JSON.parse(localStorage.getItem('quizData')) || {};
 
 // Intro Sound
 
+
+const unMuteIntro = document.querySelector('#unmute-intro');
+const muteIntro = document.querySelector('#mute-intro');
 const introMusic = new Audio('./sounds/intro.mp3');
 introMusic.loop = true;
 introMusic.volume = 0.2;
-introMusic.play();
+
+
+unMuteIntro.addEventListener('click', ()=>{
+  unMuteIntro.classList.add('hide');
+  muteIntro.classList.remove('hide');
+  introMusic.volume = 0;
+})
+
+muteIntro.addEventListener('click', ()=>{
+  muteIntro.classList.add('hide');
+  unMuteIntro.classList.remove('hide');
+ 
+  introMusic.volume = 0.2;
+  introMusic.play();
+})
+
 
 // for countDown timer
 
@@ -365,6 +383,10 @@ reTryBtn.addEventListener('click', () => {
   nextBtn.classList.add('hide');
   currentScore = score;
   quizData.currentScore = score;
+  if (oldScore < currentScore) {
+    oldScore = currentScore;
+    localStorage.setItem('oldScore', oldScore);
+  }
   btnClickCount = 1;
   score = 0;
   quizData.score = score;
@@ -395,8 +417,10 @@ resultLogo.addEventListener('click', () => {
 });
 
 function goHome() {
-  introMusic.currentTime = 0;
+  if(muteIntro.classList.contains('hide')){
+    introMusic.currentTime = 0;
   introMusic.play();
+  }
   countDownMusic.currentTime = 0;
   countDownMusic.pause();
   correctAnswerMusic.pause();
@@ -606,3 +630,9 @@ function resetAll() {
   ulCursorStyle = '';
   localStorage.setItem('ulCursorStyle', ulCursorStyle);
 }
+
+// Prevent Right Click*********************************************************
+
+document.addEventListener('contextmenu', function (event) {
+  event.preventDefault();
+});

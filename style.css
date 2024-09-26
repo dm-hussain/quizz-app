@@ -19,6 +19,22 @@ main {
   padding: 0 30px;
   margin-top: 75px;
 }
+
+
+.intro-sound-icon-container {
+  margin-bottom: 20px;
+  position: absolute;
+  left: 20%;
+  top: 10px;
+}
+.intro-sound-icon-container img {
+  width: 70%;
+  cursor: pointer;
+  padding: 10px;
+}
+
+
+
 .sound-icon-container {
   margin-bottom: 20px;
   position: absolute;
@@ -30,6 +46,10 @@ main {
   cursor: pointer;
   padding: 10px;
 }
+
+
+
+
 
 .hero-section {
   display: flex;
